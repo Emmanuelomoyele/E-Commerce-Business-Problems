@@ -1,0 +1,31 @@
+
+
+With cte1 as (
+
+Select Product_category,
+round(Sum(order_amount ),2) as Total_Revenue,
+round(Sum(profit_amount ),2) as Total_Profit
+From ecommerce_orders_dataset 
+Group by Product_category
+
+),
+cte2 as (
+select
+product_category,
+concat(round(Total_Profit *100  / sum(Total_Profit) over(),2),'%')  as     Share_of_profit,
+concat(round(Total_Revenue *100  / sum(Total_Revenue) over(),2),'%')  as     Share_of_revenue,
+concat(round(Total_Profit *100  /  Total_Revenue,2),'%') as  profit_margin_percent
+from cte1
+)
+
+Select 
+cte2.Product_category,
+Total_Revenue,
+Total_Profit,
+profit_margin_percent,
+Share_of_revenue,
+Share_of_profit
+From cte1 
+inner join cte2 
+on cte2.product_category = cte1.product_category
+order by Total_profit desc;
